@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Electrical Circuits POW 111 – Interactive Course</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef2f6;--grid:#dbe3ec;--ink:#14202e;--mut:#55657a;--card:#fff;--acc:#0b7a75;--cur:#b87400;--line:#c9d4e0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1620;--grid:#1a2533;--ink:#e6edf5;--mut:#9fb0c3;--card:#17212e;--acc:#3fc1b5;--cur:#f0b429;--line:#2a3a4d}}
+:root[data-theme="dark"]{--bg:#0f1620;--grid:#1a2533;--ink:#e6edf5;--mut:#9fb0c3;--card:#17212e;--acc:#3fc1b5;--cur:#f0b429;--line:#2a3a4d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.7 Cairo,system-ui,sans-serif;color:var(--ink);background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.top{background:var(--ink);color:var(--bg);text-align:center;padding:8px 12px;font-weight:600;font-size:15px}
+header,main,footer{max-width:860px;margin:0 auto;padding:0 16px}
+h1{font-size:clamp(28px,6vw,46px);line-height:1.15;margin:28px 0 6px;font-weight:800}
+header p{margin:0 0 16px;color:var(--mut)}
+nav{display:flex;gap:8px;overflow-x:auto;padding:6px 0 14px}
+nav button{flex:none;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer}
+nav button[aria-current="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+:focus-visible{outline:3px solid var(--cur);outline-offset:2px}
+h2{font-size:26px;margin:10px 0 14px}h2 span{display:block;font-size:15px;color:var(--mut);font-weight:400}
+.sec{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 18px}
+.ar{direction:rtl;text-align:right;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--line)}
+figure{margin:12px 0}svg{width:100%;max-width:420px;display:block;margin:auto}
+svg .w{fill:none;stroke:var(--ink);stroke-width:2}svg .r{fill:none;stroke:var(--cur);stroke-width:2.4}svg .d{fill:var(--ink)}svg text{fill:var(--mut);font:600 12px Cairo,sans-serif}
+.q{margin-top:12px;border-left:4px solid var(--acc);padding:6px 0 6px 14px}.timerbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}.timer{font-weight:800;color:var(--acc);font-variant-numeric:tabular-nums}.timer.low{color:#c0392b}.timerbar button{border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;padding:4px 10px;cursor:pointer}.timerbar button:disabled{opacity:.45;cursor:default}
+.q ol{margin:8px 0;padding-left:22px}.q li{margin:4px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row button,#cf button{border:0;border-radius:8px;background:var(--acc);color:#fff;font:inherit;font-weight:600;padding:6px 14px;cursor:pointer}
+.row button:disabled{opacity:.45;cursor:default}
+input{font:inherit;border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg);color:var(--ink);min-width:0;width:150px}
+.fb{font-weight:600;color:var(--acc)}
+#bot{background:var(--card);border:1.5px solid var(--acc);border-radius:12px;padding:16px 18px;margin:8px 0 40px}
+#log{max-height:300px;overflow:auto;margin:10px 0}
+.m{padding:8px 12px;border-radius:10px;margin:6px 0;white-space:pre-wrap}.u{background:var(--grid);margin-left:20%}.b{border:1px solid var(--line)}
+#cf{display:flex;gap:8px}#cf input{flex:1;width:auto}
+.hint{font-size:14px;color:var(--mut)}
+</style></head><body>
+<div class="top">Developed by Ahmed Abdelhamid</div>
+<header><h1>Electrical Circuits · POW 111</h1><p>Interactive course, Arabic then English. Each part has a drawn circuit and a question you can solve step by step. الشرح بالعربي ثم الإنجليزي، مع رسومات وأسئلة بالحل خطوة بخطوة.</p><nav id="nav" aria-label="Lessons"></nav></header>
+<main id="main"></main>
+<main><section id="bot" aria-label="Circuit tutor"><h2>Circuit Tutor <span>مساعد الدوائر – يعمل بالكامل داخل الصفحة بدون أي خدمة خارجية</span></h2>
+<div id="log" aria-live="polite"></div>
+<form id="cf"><input id="ci" placeholder="Ask about a topic or try: parallel 5 7 9" aria-label="Question"><button>Ask</button></form>
+<p class="hint">Calculator commands: series 1 2 3 · parallel 5 7 9 · divider 12 2 4 · pmax 22 9 — or ask about: Ohm, KVL, KCL, mesh, nodal, Thevenin, Norton, max power, delta-star, sources.</p></section></main>
+<footer></footer>
+<script>
+const P=d=>`<path class="w" d="${d}"/>`,
+Z=(x,y,v,t,lx,ly)=>`<g transform="translate(${x} ${y})${v?" rotate(90)":""}"><path class="r" d="M0 0h10l4-9 8 18 8-18 8 18 8-18 4 9h10"/></g><text x="${lx}" y="${ly}">${t}</text>`,
+B=(x,y,t)=>`<path class="w" d="M${x-12} ${y-4}h24M${x-6} ${y+4}h12"/><text x="${x-34}" y="${y+4}">${t}</text>`,
+O=(x,y)=>`<circle class="d" cx="${x}" cy="${y}" r="3"/>`,
+S=i=>`<svg viewBox="0 0 360 190" role="img">${i}</svg>`;
+const D={
+series:S(B(40,100,"12 V")+P("M40 96V40H80M140 40H300V70M300 130V160H220M160 160H40V104")+Z(80,40,0,"R₁ 1Ω",95,30)+Z(300,70,1,"R₂ 2Ω",310,104)+Z(160,160,0,"R₃ 3Ω",175,182)+`<text x="150" y="108">I →</text>`),
+par:S(B(40,100,"8 V")+P("M40 96V30H280M40 104V170H280")+[120,200,280].map((x,i)=>P(`M${x} 30V50M${x} 110V170`)+Z(x,50,1,["5Ω","7Ω","9Ω"][i],x+10,85)).join("")+O(120,30)+O(200,30)+O(120,170)+O(200,170)),
+comp:S(B(40,100,"120 V")+P("M40 96V40H80M140 40H280M40 104V160H280")+Z(80,40,0,"80Ω",95,30)+[200,280].map((x,i)=>P(`M${x} 40V55M${x} 115V160`)+Z(x,55,1,["100Ω","50Ω"][i],x+10,90)).join("")+O(200,40)+O(200,160)),
+mesh:S(B(40,100,"30 V")+P("M40 96V40H80M140 40H300M40 104V160H300")+Z(80,40,0,"8Ω",100,30)+[180,300].map((x,i)=>P(`M${x} 40V55M${x} 115V160`)+Z(x,55,1,["3Ω","6Ω"][i],x+10,90)).join("")+O(180,40)+O(180,160)+`<text x="95" y="105">i₁ ↻</text><text x="225" y="105">i₂ ↻</text>`),
+nodal:S(P("M100 70H130M190 70H260V70M100 70V80M100 140V160H330M260 140V160M260 70H330V90M330 130V160M100 70V30H168M192 30H260V70")+Z(130,70,0,"4Ω",145,60)+Z(100,80,1,"2Ω",110,115)+Z(260,80,1,"6Ω",270,115)+`<circle class="w" cx="330" cy="110" r="20"/><path class="w" d="M330 120V100M325 105l5-6 5 6"/><text x="300" y="150">10 A</text><circle class="w" cx="180" cy="30" r="12"/><path class="w" d="M186 30H174M179 25l-6 5 6 5"/><text x="165" y="14">5 A</text><text x="82" y="62">v₁</text><text x="264" y="62">v₂</text>`+O(100,70)+O(260,70)+`<text x="60" y="182">ground (0 V)</text>`),
+th:S(B(40,100,"V_Th")+P("M40 96V40H80M140 40H240M244 40H300V60M300 120V160H244M236 160H40V104")+Z(80,40,0,"R_Th",95,30)+Z(300,60,1,"R_L",310,95)+`<circle class="w" cx="240" cy="40" r="4"/><circle class="w" cx="240" cy="160" r="4"/><text x="226" y="32">a</text><text x="226" y="182">b</text>`)};
+const L=[
+{t:["Elements & Connections","العناصر والتوصيل"],s:[
+{a:"المقاومة (Ω) تعيق مرور التيار: V = IR وP = I²R. المكثف (F) يخزن طاقة في مجال كهربي: I = C dv/dt. الملف (H) يخزن طاقة في مجال مغناطيسي: V = L di/dt.",e:"A resistor (Ω) opposes current: V = IR, P = I²R. A capacitor (F) stores energy in an electric field: I = C dv/dt. An inductor (H) stores energy in a magnetic field: V = L di/dt.",q:{p:"A 20 Ω resistor is connected across 40 V. Find the current (A).",st:["Ohm’s law: I = V / R","I = 40 / 20","I = 2 A, and the power is P = V·I = 80 W"],ans:2,u:"A"}},
+{a:"المصدر المستقل المثالي يعطي جهدًا أو تيارًا ثابتًا مهما كان الحمل. المصدر التابع تتحدد قيمته بمتغير آخر في الدائرة (VCVS وCCVS وVCCS وCCCS). التيار DC ثابت، والتيار AC جيبي: V = A sin ωt حيث ω = 2πf وf = 1/T.",e:"An ideal independent source gives a constant voltage or current whatever the load. A dependent source is set by another circuit variable (VCVS, CCVS, VCCS, CCCS). DC is constant; AC is sinusoidal: V = A sin ωt, ω = 2πf, f = 1/T.",q:{p:"An AC source has period T = 0.02 s. Find its frequency (Hz).",st:["f = 1 / T","f = 1 / 0.02","f = 50 Hz"],ans:50,u:"Hz"}},
+{a:"التوالي: نفس التيار يمر في كل المقاومات، والجهود تُجمع: Rs = R₁ + R₂ + R₃.",e:"Series: the same current flows through every resistor and the voltages add: Rs = R₁ + R₂ + R₃.",d:"series",q:{p:"R₁ = 1 Ω, R₂ = 2 Ω, R₃ = 3 Ω in series across 12 V. Find the current (A).",st:["Rs = 1 + 2 + 3 = 6 Ω","I = V / Rs = 12 / 6","I = 2 A, so the drops are 2 V, 4 V and 6 V (sum = 12 V)"],ans:2,u:"A"}},
+{a:"التوازي: نفس الجهد على كل الفروع، والتيارات تُجمع: 1/Rp = Σ 1/Rᵢ. التيار الداخل إلى العقدة يساوي الخارج منها.",e:"Parallel: every branch has the same voltage and the currents add: 1/Rp = Σ 1/Rᵢ. Current into a junction equals current out.",d:"par",q:{p:"5 Ω, 7 Ω and 9 Ω in parallel across 8 V. Find the total current (A).",st:["1/Rp = 1/5 + 1/7 + 1/9 = 0.454, so Rp = 2.20 Ω","I = 8 / 2.20","I ≈ 3.63 A (branches 1.6 + 1.14 + 0.89; the slide rounds to 3.64 A)"],ans:3.63,u:"A"}},
+{a:"الدوائر المركبة: احلها من الداخل للخارج. اختصر التوازي أولًا ثم اجمع التوالي.",e:"Compound circuits: solve from the inside out. Reduce the parallel part first, then add the series part.",d:"comp",q:{p:"80 Ω in series with (100 Ω ∥ 50 Ω), source 120 V. Find the total current (A).",st:["100 ∥ 50 = 100·50 / 150 = 33.3 Ω","Rt = 80 + 33.3 = 113.3 Ω","I = 120 / 113.3 = 1.06 A (the 80 Ω drops 84.8 V)"],ans:1.06,u:"A"}}]},
+{t:["Simple Resistance Circuits","دوائر المقاومات البسيطة"],s:[
+{a:"تقسيم الجهد (للتوالي): Vₙ = V · Rₙ / (R₁ + R₂ + … + Rₙ). المقاومة الأكبر تأخذ جهدًا أكبر.",e:"Voltage divider (series): Vₙ = V · Rₙ / (R₁ + R₂ + … + Rₙ). The larger resistor gets the larger share.",d:"series",q:{p:"12 V across 2 kΩ and 4 kΩ in series. Find the voltage across the 4 kΩ resistor (V).",st:["V₂ = V · R₂ / (R₁ + R₂)","V₂ = 12 · 4 / 6","V₂ = 8 V"],ans:8,u:"V"}},
+{a:"تقسيم التيار (للتوازي): i₁ = i · R₂ / (R₁ + R₂). المقاومة المقابلة هي التي تكون في البسط. لو R₂ = 0 (قصر) يمر كل التيار فيها، ولو R₂ = ∞ (فتح) لا يمر فيها تيار.",e:"Current divider (parallel): i₁ = i · R₂ / (R₁ + R₂); the other resistor goes on top. If R₂ = 0 (short) it takes all the current; if R₂ = ∞ (open) it takes none.",d:"par",q:{p:"9 A enters 3 Ω ∥ 6 Ω. Find the current in the 3 Ω branch (A).",st:["i₁ = i · R₂ / (R₁ + R₂), with the 6 Ω on top","i₁ = 9 · 6 / 9","i₁ = 6 A (the 6 Ω branch gets 3 A)"],ans:6,u:"A"}},
+{a:"تحويل Δ إلى Y: R₁ = R_b·R_c / (R_a + R_b + R_c) وهكذا لكل فرع. وتحويل Y إلى Δ: R_a = (R₁R₂ + R₂R₃ + R₃R₁) / R₁. يفيد في دوائر القنطرة (bridge).",e:"Delta to star: R₁ = R_b·R_c / (R_a + R_b + R_c), and likewise for the others. Star to delta: R_a = (R₁R₂ + R₂R₃ + R₃R₁) / R₁. Useful for bridge circuits.",q:{p:"Delta with R_a = 15 Ω, R_b = 10 Ω, R_c = 25 Ω. Find R₁ of the equivalent star (Ω).",st:["Sum = 15 + 10 + 25 = 50 Ω","R₁ = R_b·R_c / sum = 10·25 / 50","R₁ = 5 Ω (and R₂ = 7.5 Ω, R₃ = 3 Ω)"],ans:5,u:"Ω"}}]},
+{t:["Mesh Analysis","تحليل الحلقات (Mesh)"],s:[
+{a:"تحليل الـ Mesh يطبق قانون كيرشوف للجهد (KVL). الخطوات: 1) ضع تيارًا لكل mesh 2) اكتب KVL لكل mesh وعبّر عن الجهود بقانون أوم 3) حل المعادلات. يصلح للدوائر المستوية فقط.",e:"Mesh analysis applies KVL. Steps: 1) assign a current to each mesh, 2) write KVL for each mesh and use Ohm’s law, 3) solve the equations. It works for planar circuits only.",d:"mesh",q:{p:"Find i₁ in the circuit above (30 V, 8 Ω, 3 Ω, 6 Ω).",st:["Mesh 1: −30 + 8i₁ + 3(i₁ − i₂) = 0, so 11i₁ − 3i₂ = 30","Mesh 2: 3(i₂ − i₁) + 6i₂ = 0, so i₁ = 3i₂","33i₂ − 3i₂ = 30, so i₂ = 1 A and i₁ = 3 A (v₁ = 24 V)"],ans:3,u:"A"}},
+{a:"لو مصدر تيار مشترك بين mesh‌ين نكوّن Supermesh: نستبعد المصدر ونكتب KVL حول الحلقة الكبيرة، ونضيف معادلة من فرق التيارين يساوي قيمة المصدر.",e:"When a current source is shared by two meshes, form a supermesh: skip the source, write KVL around the outer loop, and add the constraint that the mesh currents differ by the source value.",q:{p:"20 V, 6 Ω, 10 Ω, 4 Ω and a 6 A source shared by both meshes (i₂ = i₁ + 6). Find i₁ (A).",st:["Constraint: i₂ − i₁ = 6","Supermesh KVL: −20 + 6i₁ + 10i₂ + 4i₂ = 0, so 6i₁ + 14i₂ = 20","6i₁ + 14(i₁ + 6) = 20, so 20i₁ = −64 and i₁ = −3.2 A (i₂ = 2.8 A)"],ans:-3.2,u:"A"}}]},
+{t:["Nodal Analysis","تحليل العقد (Nodal)"],s:[
+{a:"تحليل العقد يطبق قانون كيرشوف للتيار (KCL). الخطوات: 1) اختر عقدة مرجعية (الأرض) 2) طبق KCL عند كل عقدة، والتيار في المقاومة i = (v_الأعلى − v_الأقل) / R 3) حل المعادلات للحصول على جهود العقد.",e:"Nodal analysis applies KCL. Steps: 1) pick a reference (ground) node, 2) write KCL at every other node with i = (v_higher − v_lower) / R, 3) solve for the node voltages.",d:"nodal",q:{p:"Circuit above: 5 A, 4 Ω, 2 Ω, 6 Ω, 10 A. Find v₁ (V).",st:["Node 1: 5 = (v₁ − v₂)/4 + v₁/2, so 3v₁ − v₂ = 20","Node 2: (v₁ − v₂)/4 + 10 = 5 + v₂/6, so −3v₁ + 5v₂ = 60","Add the equations: 4v₂ = 80, so v₂ = 20 V and v₁ = 40/3 = 13.33 V"],ans:13.33,u:"V"}},
+{a:"لو مصدر جهد بين عقدتين غير مرجعيتين نكوّن Supernode: نطبق KCL على العقدتين معًا، وKVL للمصدر نفسه. الـ Supernode ليس له جهد خاص به.",e:"A voltage source between two non-reference nodes forms a supernode: apply KCL to both nodes together and KVL across the source. A supernode has no voltage of its own.",q:{p:"2 A enters node 1 (2 Ω to ground), node 2 has 4 Ω to ground and a 7 A sink, and a 2 V source gives v₂ = v₁ + 2. Find v₁ (V).",st:["Supernode KCL: 2 = v₁/2 + v₂/4 + 7, so 2v₁ + v₂ = −20","KVL across the source: v₂ = v₁ + 2","3v₁ + 2 = −20, so v₁ = −7.33 V (v₂ = −5.33 V)"],ans:-7.33,u:"V"}}]},
+{t:["Circuit Theorems","نظريات الدوائر"],s:[
+{a:"نظرية ثيفينين: أي دائرة خطية ذات طرفين تساوي مصدر جهد V_Th على التوالي مع مقاومة R_Th. V_Th هو جهد الدائرة المفتوحة، وR_Th هي المقاومة المكافئة بعد إطفاء المصادر المستقلة (مصدر الجهد = قصر، مصدر التيار = فتح).",e:"Thevenin: any linear two-terminal circuit equals a voltage source V_Th in series with R_Th. V_Th is the open-circuit voltage; R_Th is the equivalent resistance with independent sources off (voltage source = short, current source = open).",d:"th",q:{p:"V_Th = 30 V, R_Th = 4 Ω. Find the load current for R_L = 6 Ω (A).",st:["I = V_Th / (R_Th + R_L)","I = 30 / (4 + 6)","I = 3 A (R_L = 16 Ω gives 1.5 A, R_L = 36 Ω gives 0.75 A)"],ans:3,u:"A"}},
+{a:"نظرية نورتون: مصدر تيار I_N على التوازي مع مقاومة R_N. I_N هو تيار القصر عند الطرفين، وR_N = R_Th، ولذلك I_N = V_Th / R_Th.",e:"Norton: a current source I_N in parallel with R_N. I_N is the short-circuit current, R_N = R_Th, so I_N = V_Th / R_Th.",q:{p:"A circuit has V_Th = 12 V and R_Th = 3 Ω. Find the Norton current (A).",st:["I_N is the short-circuit current","I_N = V_Th / R_Th = 12 / 3","I_N = 4 A in parallel with R_N = 3 Ω"],ans:4,u:"A"}},
+{a:"نظرية أقصى قدرة: تصل أكبر قدرة إلى الحمل عندما R_L = R_Th، وتساوي P_max = V_Th² / (4R_Th).",e:"Maximum power transfer: the load receives the most power when R_L = R_Th, and P_max = V_Th² / (4R_Th).",q:{p:"V_Th = 22 V and R_Th = 9 Ω. Find the maximum load power (W).",st:["Choose R_L = R_Th = 9 Ω","P_max = V_Th² / (4·R_Th) = 22² / (4·9)","P_max = 484 / 36 = 13.44 W"],ans:13.44,u:"W"}}]}];
+const nav=document.getElementById("nav"),main=document.getElementById("main");
+function show(i){nav.innerHTML=L.map((l,k)=>`<button data-i="${k}" aria-current="${k==i}">${l.t[0]}</button>`).join("");const l=L[i];
+main.innerHTML=`<h2>${l.t[0]}<span>${l.t[1]}</span></h2>`+l.s.map(s=>`<section class="sec"><div class="ar" dir="rtl" lang="ar">${s.a}</div><div>${s.e}</div>${s.d?`<figure>${D[s.d]}</figure>`:""}<div class="q" data-a="${s.q.ans}"><b>Try it.</b> ${s.q.p}<div class="timerbar"><span class="timer" aria-live="polite">30s</span><button type="button" class="startTimer">Start 30-second timer</button><button type="button" class="resetTimer">Reset</button></div><ol>${s.q.st.map(x=>`<li hidden>${x}</li>`).join("")}</ol><div class="row"><button class="nx">Show next step</button><input inputmode="decimal" placeholder="Answer (${s.q.u})" aria-label="Your answer"><button class="ck">Check</button><span class="fb"></span></div></div></section>`).join("");window.scrollTo(0,0)}
+nav.onclick=e=>{const b=e.target.closest("button");if(b)show(+b.dataset.i)};
+main.onclick=e=>{const q=e.target.closest(".q");if(!q)return;
+if(e.target.classList.contains("nx")){const h=q.querySelector("li[hidden]");if(h)h.hidden=false;if(!q.querySelector("li[hidden]"))e.target.disabled=true}
+if(e.target.classList.contains("ck")){const v=parseFloat(q.querySelector("input").value),a=+q.dataset.a;q.querySelector(".fb").textContent=isNaN(v)?"Type a number first. اكتب رقمًا":Math.abs(v-a)<=Math.abs(a)*.01+.005?"Correct ✓ صح":"Not yet – reveal the next step. لسه، جرب الخطوة التالية"}};
+show(0);
+/* Offline tutor: no network, no external AI service */
+const KB=[[/ohm|resist|power|watt/,"قانون أوم: V = IR. القدرة: P = VI = I²R = V²/R.","Ohm’s law: V = IR. Power: P = VI = I²R = V²/R."],
+[/kvl|voltage law|kirchhoff/,"KVL: مجموع الجهود حول أي حلقة مغلقة = صفر.","KVL: the voltages around any closed loop sum to zero."],
+[/kcl|current law|junction|node law/,"KCL: مجموع التيارات الداخلة إلى عقدة = مجموع الخارجة.","KCL: the currents into a node equal the currents out."],
+[/mesh|loop|supermesh/,"Mesh: ضع تيار لكل حلقة، اكتب KVL، وحل المعادلات. مع مصدر تيار مشترك استخدم Supermesh.","Mesh: assign a current per loop, write KVL, solve. A shared current source needs a supermesh."],
+[/nodal|supernode|node volt/,"Nodal: اختر أرضًا، اكتب KCL عند كل عقدة. مصدر جهد بين عقدتين = Supernode.","Nodal: choose ground, write KCL at each node. A voltage source between two nodes makes a supernode."],
+[/thev/,"ثيفينين: V_Th = جهد الدائرة المفتوحة، R_Th = المقاومة بعد إطفاء المصادر المستقلة.","Thevenin: V_Th = open-circuit voltage, R_Th = resistance seen with independent sources off."],
+[/norton/,"نورتون: I_N = تيار القصر، R_N = R_Th، وI_N = V_Th/R_Th.","Norton: I_N = short-circuit current, R_N = R_Th, I_N = V_Th/R_Th."],
+[/max.*power|maximum/,"أقصى قدرة عند R_L = R_Th، وP_max = V_Th²/(4R_Th).","Maximum power when R_L = R_Th; P_max = V_Th²/(4R_Th)."],
+[/delta|star|wye|bridge/,"Δ→Y: R₁ = R_b·R_c/(R_a+R_b+R_c). Y→Δ: R_a = (R₁R₂+R₂R₃+R₃R₁)/R₁.","Delta to star: R₁ = R_b·R_c/(R_a+R_b+R_c). Star to delta: R_a = (R₁R₂+R₂R₃+R₃R₁)/R₁."],
+[/source|dependent|ideal/,"المصدر المثالي ثابت مهما كان الحمل. المصدر التابع يتحكم فيه جهد أو تيار آخر.","An ideal source stays constant with any load. A dependent source is controlled by another voltage or current."],
+[/series|parallel|divider/,"توالي: Rs = ΣR. توازي: 1/Rp = Σ1/R. جرّب: parallel 5 7 9","Series: Rs = ΣR. Parallel: 1/Rp = Σ1/R. Try: parallel 5 7 9"]];
+const r2=x=>Math.round(x*1e3)/1e3;
+function ans(t){t=t.toLowerCase();const n=(t.match(/-?\d*\.?\d+/g)||[]).map(Number),c=t.split(/\s+/)[0];
+if(c=="series"&&n.length)return`Rs = ${r2(n.reduce((a,b)=>a+b,0))} Ω`;
+if(c=="parallel"&&n.length)return`Rp = ${r2(1/n.reduce((a,b)=>a+1/b,0))} Ω`;
+if(c=="divider"&&n.length==3)return`V₂ = ${r2(n[0]*n[2]/(n[1]+n[2]))} V  (I = ${r2(n[0]/(n[1]+n[2]))} A)`;
+if(c=="pmax"&&n.length==2)return`R_L = ${n[1]} Ω, P_max = ${r2(n[0]*n[0]/(4*n[1]))} W`;
+const k=KB.find(x=>x[0].test(t));return k?k[1]+"\n"+k[2]:"لم أجد إجابة. جرب كلمات مثل: Ohm, mesh, nodal, Thevenin, أو أمر حاسبة مثل: series 1 2 3\nNo match. Try keywords like Ohm, mesh, nodal, Thevenin, or a command like: series 1 2 3"}
+const lg=document.getElementById("log"),ci=document.getElementById("ci");
+const add=(c,t)=>{const d=document.createElement("div");d.className="m "+c;d.textContent=t;lg.appendChild(d);lg.scrollTop=lg.scrollHeight};
+add("b","Hello! Ask me about any lesson, or run a calculation. أهلًا! اسألني عن أي درس أو اطلب حسابًا.");
+document.getElementById("cf").onsubmit=e=>{e.preventDefault();const t=ci.value.trim();if(!t)return;add("u",t);add("b",ans(t));ci.value=""};
+</script></body></html>
